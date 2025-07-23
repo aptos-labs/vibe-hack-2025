@@ -1,6 +1,7 @@
 module aptos_vibes::vibe_voting {
     use std::signer;
     use std::string::{Self, String};
+    use std::vector;
     use aptos_framework::event;
     use aptos_std::table::{Self, Table};
     use aptos_framework::account;
@@ -11,6 +12,8 @@ module aptos_vibes::vibe_voting {
     const E_ALREADY_VOTED: u64 = 2;
     /// You haven't voted for this project yet
     const E_NO_VOTE_TO_REMOVE: u64 = 3;
+    /// You are not authorized to vote
+    const E_NOT_AUTHORIZED: u64 = 4;
 
     const VOTE_UP: u8 = 1;
     const VOTE_DOWN: u8 = 2;
@@ -23,6 +26,8 @@ module aptos_vibes::vibe_voting {
 
     struct VotingRegistry has key {
         projects: Table<String, ProjectVotes>,
+        allowlist: vector<address>,
+        allowlist_enabled: bool,
     }
 
     #[event]
@@ -38,6 +43,8 @@ module aptos_vibes::vibe_voting {
         if (!exists<VotingRegistry>(admin_addr)) {
             move_to(admin, VotingRegistry {
                 projects: table::new(),
+                allowlist: vector::empty<address>(),
+                allowlist_enabled: true, // Default to enabled for security
             });
         }
     }
@@ -55,6 +62,35 @@ module aptos_vibes::vibe_voting {
                 voters: table::new(),
             });
         }
+    }
+
+    public entry fun add_to_allowlist(admin: &signer, voter_addr: address) acquires VotingRegistry {
+        let admin_addr = signer::address_of(admin);
+        assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
+        
+        let registry = borrow_global_mut<VotingRegistry>(admin_addr);
+        if (!vector::contains(&registry.allowlist, &voter_addr)) {
+            vector::push_back(&mut registry.allowlist, voter_addr);
+        }
+    }
+
+    public entry fun remove_from_allowlist(admin: &signer, voter_addr: address) acquires VotingRegistry {
+        let admin_addr = signer::address_of(admin);
+        assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
+        
+        let registry = borrow_global_mut<VotingRegistry>(admin_addr);
+        let (found, index) = vector::index_of(&registry.allowlist, &voter_addr);
+        if (found) {
+            vector::remove(&mut registry.allowlist, index);
+        }
+    }
+
+    public entry fun toggle_allowlist(admin: &signer, enabled: bool) acquires VotingRegistry {
+        let admin_addr = signer::address_of(admin);
+        assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
+        
+        let registry = borrow_global_mut<VotingRegistry>(admin_addr);
+        registry.allowlist_enabled = enabled;
     }
 
     public entry fun upvote(voter: &signer, admin_addr: address, project_id: String) acquires VotingRegistry {
@@ -96,6 +132,9 @@ module aptos_vibes::vibe_voting {
     fun vote_internal(voter: &signer, admin_addr: address, project_id: String, vote_type: u8) acquires VotingRegistry {
         let voter_addr = signer::address_of(voter);
         assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
+        
+        // Check if address is allowed to vote (before mutable borrow)
+        assert!(is_address_allowed(admin_addr, voter_addr), E_NOT_AUTHORIZED);
         
         let registry = borrow_global_mut<VotingRegistry>(admin_addr);
         assert!(table::contains(&registry.projects, project_id), E_NOT_INITIALIZED);
@@ -145,6 +184,23 @@ module aptos_vibes::vibe_voting {
     }
 
     #[view]
+    public fun is_address_allowed(admin_addr: address, voter_addr: address): bool acquires VotingRegistry {
+        if (!exists<VotingRegistry>(admin_addr)) {
+            return false // Registry doesn't exist, not allowed
+        };
+        
+        let registry = borrow_global<VotingRegistry>(admin_addr);
+        
+        // If allowlist is disabled, everyone is allowed
+        if (!registry.allowlist_enabled) {
+            return true
+        };
+        
+        // If allowlist is enabled, check if user is on it
+        vector::contains(&registry.allowlist, &voter_addr)
+    }
+
+    #[view]
     public fun get_project_votes(admin_addr: address, project_id: String): (u64, u64) acquires VotingRegistry {
         if (!exists<VotingRegistry>(admin_addr)) {
             return (0, 0)
@@ -186,5 +242,69 @@ module aptos_vibes::vibe_voting {
         } else {
             0
         }
+    }
+
+    #[test_only]
+    use aptos_framework::timestamp;
+    #[test_only]
+    use aptos_framework::account::create_account_for_test;
+
+    #[test(admin = @0x123, voter1 = @0x456, voter2 = @0x789)]
+    public fun test_upvote_downvote_works(admin: &signer, voter1: &signer, voter2: &signer) acquires VotingRegistry {
+        // Setup
+        timestamp::set_time_has_started_for_testing(&account::create_signer_with_capability(&account::create_test_signer_cap(@0x1)));
+        
+        let admin_addr = signer::address_of(admin);
+        let voter1_addr = signer::address_of(voter1);
+        let voter2_addr = signer::address_of(voter2);
+        
+        create_account_for_test(admin_addr);
+        create_account_for_test(voter1_addr);
+        create_account_for_test(voter2_addr);
+
+        // Initialize (disable allowlist to avoid mechanics)
+        initialize(admin);
+        toggle_allowlist(admin, false);
+        
+        let project_id = string::utf8(b"test_project");
+        initialize_project(admin, project_id);
+        
+        // Test upvote works
+        upvote(voter1, admin_addr, project_id);
+        let (upvotes, downvotes) = get_project_votes(admin_addr, project_id);
+        assert!(upvotes == 1, 1);
+        assert!(downvotes == 0, 2);
+        
+        // Test downvote works
+        downvote(voter2, admin_addr, project_id);
+        let (upvotes, downvotes) = get_project_votes(admin_addr, project_id);
+        assert!(upvotes == 1, 3);
+        assert!(downvotes == 1, 4);
+    }
+
+    #[test(admin = @0x123, random_user = @0x999)]
+    public fun test_voter_eligibility(admin: &signer, random_user: &signer) acquires VotingRegistry {
+        // Setup
+        timestamp::set_time_has_started_for_testing(&account::create_signer_with_capability(&account::create_test_signer_cap(@0x1)));
+        
+        let admin_addr = signer::address_of(admin);
+        let user_addr = signer::address_of(random_user);
+        
+        create_account_for_test(admin_addr);
+        create_account_for_test(user_addr);
+        
+        initialize(admin);
+        let project_id = string::utf8(b"test_project");
+        initialize_project(admin, project_id);
+        
+        // Test toggle ON (allowlist enabled) - should fail
+        toggle_allowlist(admin, true);
+        assert!(!is_address_allowed(admin_addr, user_addr), 1);
+        
+        // Test toggle OFF (allowlist disabled) - should pass
+        toggle_allowlist(admin, false);
+        assert!(is_address_allowed(admin_addr, user_addr), 2);
+        upvote(random_user, admin_addr, project_id);
+        assert!(get_user_vote(admin_addr, project_id, user_addr) == VOTE_UP, 3);
     }
 } 
