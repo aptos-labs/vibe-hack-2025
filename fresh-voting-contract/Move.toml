@@ -1,10 +1,10 @@
 [package]
-name = "aptos_vibes"
+name = "fresh_voting"
 version = "1.0.0"
 authors = ["Aptos Vibes Team"]
 
 [addresses]
-aptos_vibes = "0x5bd3338c9f09619c16a5207af405b84e98d041c8194ea90c2243be7dba513423"
+fresh_voting = "0x5bd3338c9f09619c16a5207af405b84e98d041c8194ea90c2243be7dba513423"
 
 [dependencies.AptosFramework]
 git = "https://github.com/aptos-labs/aptos-core.git"

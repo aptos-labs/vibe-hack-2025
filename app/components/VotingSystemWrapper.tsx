@@ -45,7 +45,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
     try {
       await aptos.view({
         payload: {
-          function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_project_votes` as `${string}::${string}::${string}`,
+          function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::get_project_votes` as `${string}::${string}::${string}`,
           functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
         },
       });
@@ -80,7 +80,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
         // Load public vote counts without user vote
         const result = await aptos.view({
           payload: {
-            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_project_votes` as `${string}::${string}::${string}`,
+            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::get_project_votes` as `${string}::${string}::${string}`,
             functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
           },
         });
@@ -101,13 +101,13 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       const [voteCountsResult, userVoteResult] = await Promise.all([
         aptos.view({
           payload: {
-            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_project_votes` as `${string}::${string}::${string}`,
+            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::get_project_votes` as `${string}::${string}::${string}`,
             functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
           },
         }),
         aptos.view({
           payload: {
-            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_user_vote` as `${string}::${string}::${string}`,
+            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::get_user_vote` as `${string}::${string}::${string}`,
             functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId, account.address.toString()],
           },
         })
@@ -178,12 +178,12 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
 
       if (isSameVote) {
         // Remove vote if clicking same vote type
-        functionName = `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::remove_vote` as `${string}::${string}::${string}`;
+        functionName = `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::remove_vote` as `${string}::${string}::${string}`;
       } else {
         // Cast new vote
         functionName = voteType === 'up' 
-          ? `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::upvote` as `${string}::${string}::${string}`
-          : `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::downvote` as `${string}::${string}::${string}`;
+          ? `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::upvote` as `${string}::${string}::${string}`
+          : `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::downvote` as `${string}::${string}::${string}`;
       }
 
       const response = await signAndSubmitTransaction({

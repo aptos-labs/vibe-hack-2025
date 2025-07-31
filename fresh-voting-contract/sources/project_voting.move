@@ -1,26 +1,26 @@
-module aptos_vibes::old_voting {
+module fresh_voting::project_voting {
     use std::signer;
-    use std::string::{Self, String};
+    use std::string::String;
     use aptos_framework::event;
     use aptos_std::table::{Self, Table};
-    use aptos_framework::account;
+    use aptos_framework::timestamp;
 
-    /// Voting system has not been initialized yet
-    const E_NOT_INITIALIZED: u64 = 1;
-    /// You have already voted for this project
-    const E_ALREADY_VOTED: u64 = 2;
-    /// You haven't voted for this project yet
-    const E_NO_VOTE_TO_REMOVE: u64 = 3;
+    /// User has already voted for this project
+    const E_ALREADY_VOTED: u64 = 1;
+    /// User hasn't voted for this project yet
+    const E_NO_VOTE_TO_REMOVE: u64 = 2;
 
     const VOTE_UP: u8 = 1;
     const VOTE_DOWN: u8 = 2;
 
-    struct ProjectVotes has key, store {
+    /// Stores vote data for a single project
+    struct ProjectVotes has store {
         upvotes: u64,
         downvotes: u64,
         voters: Table<address, u8>, // voter address -> vote type (1=up, 2=down)
     }
 
+    /// Global voting registry - stores all project votes
     struct VotingRegistry has key {
         projects: Table<String, ProjectVotes>,
     }
@@ -33,8 +33,11 @@ module aptos_vibes::old_voting {
         timestamp: u64,
     }
 
+    /// Initialize the voting system (call once when deploying)
     public entry fun initialize(admin: &signer) {
         let admin_addr = signer::address_of(admin);
+        
+        // Only initialize if not already done
         if (!exists<VotingRegistry>(admin_addr)) {
             move_to(admin, VotingRegistry {
                 projects: table::new(),
@@ -42,38 +45,32 @@ module aptos_vibes::old_voting {
         }
     }
 
-    public entry fun initialize_project(admin: &signer, project_id: String) acquires VotingRegistry {
-        let admin_addr = signer::address_of(admin);
-        assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
-        
-        let registry = borrow_global_mut<VotingRegistry>(admin_addr);
-        
-        if (!table::contains(&registry.projects, project_id)) {
-            table::add(&mut registry.projects, project_id, ProjectVotes {
-                upvotes: 0,
-                downvotes: 0,
-                voters: table::new(),
-            });
-        }
-    }
-
+    /// Cast an upvote for a project
     public entry fun upvote(voter: &signer, admin_addr: address, project_id: String) acquires VotingRegistry {
         vote_internal(voter, admin_addr, project_id, VOTE_UP);
     }
 
+    /// Cast a downvote for a project  
     public entry fun downvote(voter: &signer, admin_addr: address, project_id: String) acquires VotingRegistry {
         vote_internal(voter, admin_addr, project_id, VOTE_DOWN);
     }
 
+    /// Remove your vote from a project
     public entry fun remove_vote(voter: &signer, admin_addr: address, project_id: String) acquires VotingRegistry {
         let voter_addr = signer::address_of(voter);
-        assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
-        
         let registry = borrow_global_mut<VotingRegistry>(admin_addr);
-        assert!(table::contains(&registry.projects, project_id), E_NOT_INITIALIZED);
+        
+        // Auto-create project if it doesn't exist (should have a vote to remove)
+        if (!table::contains(&registry.projects, project_id)) {
+            abort E_NO_VOTE_TO_REMOVE
+        };
         
         let project_votes = table::borrow_mut(&mut registry.projects, project_id);
-        assert!(table::contains(&project_votes.voters, voter_addr), E_NO_VOTE_TO_REMOVE);
+        
+        // Check if user has voted
+        if (!table::contains(&project_votes.voters, voter_addr)) {
+            abort E_NO_VOTE_TO_REMOVE
+        };
         
         let previous_vote = table::remove(&mut project_votes.voters, voter_addr);
         
@@ -89,16 +86,23 @@ module aptos_vibes::old_voting {
             voter: voter_addr,
             project_id,
             vote_type: 0, // 0 indicates vote removal
-            timestamp: aptos_framework::timestamp::now_microseconds(),
+            timestamp: timestamp::now_microseconds(),
         });
     }
 
+    /// Internal function to handle voting logic
     fun vote_internal(voter: &signer, admin_addr: address, project_id: String, vote_type: u8) acquires VotingRegistry {
         let voter_addr = signer::address_of(voter);
-        assert!(exists<VotingRegistry>(admin_addr), E_NOT_INITIALIZED);
-        
         let registry = borrow_global_mut<VotingRegistry>(admin_addr);
-        assert!(table::contains(&registry.projects, project_id), E_NOT_INITIALIZED);
+        
+        // Auto-create project if it doesn't exist (this is the magic - no initialization needed!)
+        if (!table::contains(&registry.projects, project_id)) {
+            table::add(&mut registry.projects, project_id, ProjectVotes {
+                upvotes: 0,
+                downvotes: 0,
+                voters: table::new(),
+            });
+        };
         
         let project_votes = table::borrow_mut(&mut registry.projects, project_id);
         
@@ -119,7 +123,7 @@ module aptos_vibes::old_voting {
                     voter: voter_addr,
                     project_id,
                     vote_type: 0, // 0 indicates vote removal
-                    timestamp: aptos_framework::timestamp::now_microseconds(),
+                    timestamp: timestamp::now_microseconds(),
                 });
                 return
             };
@@ -140,7 +144,7 @@ module aptos_vibes::old_voting {
             voter: voter_addr,
             project_id,
             vote_type,
-            timestamp: aptos_framework::timestamp::now_microseconds(),
+            timestamp: timestamp::now_microseconds(),
         });
     }
 
@@ -179,12 +183,22 @@ module aptos_vibes::old_voting {
     }
 
     #[view]
-    public fun get_vibe_score(admin_addr: address, project_id: String): u64 acquires VotingRegistry {
+    public fun get_vibe_score(admin_addr: address, project_id: String): (u64, bool) acquires VotingRegistry {
         let (upvotes, downvotes) = get_project_votes(admin_addr, project_id);
-        if (upvotes > downvotes) {
-            upvotes - downvotes
+        if (upvotes >= downvotes) {
+            (upvotes - downvotes, true)
         } else {
-            0
+            (downvotes - upvotes, false)
         }
     }
-} 
+
+    #[view]
+    public fun project_exists(admin_addr: address, project_id: String): bool acquires VotingRegistry {
+        if (!exists<VotingRegistry>(admin_addr)) {
+            return false
+        };
+        
+        let registry = borrow_global<VotingRegistry>(admin_addr);
+        table::contains(&registry.projects, project_id)
+    }
+}
