@@ -71,7 +71,7 @@ export function VotingSystem({ projectId }: VotingSystemProps) {
         aptos.view({
           payload: {
             function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::get_user_vote` as `${string}::${string}::${string}`,
-            functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId, account.address],
+            functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId, account.address.toString()],
           },
         })
       ]);
