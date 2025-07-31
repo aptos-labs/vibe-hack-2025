@@ -34,6 +34,14 @@ export function VotingSystem({ projectId }: VotingSystemProps) {
     const aptosConfig = new AptosConfig({ 
       network: Network.TESTNET,
       fullnode: NETWORK_CONFIG.NODE_URL,
+      // Add API key if available to avoid rate limiting
+      ...(NETWORK_CONFIG.API_KEY && { 
+        clientConfig: {
+          headers: {
+            'Authorization': `Bearer ${NETWORK_CONFIG.API_KEY}`
+          }
+        }
+      })
     });
     return new Aptos(aptosConfig);
   }, []); // Empty dependency array since config never changes

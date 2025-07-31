@@ -37,5 +37,7 @@ export const CONTRACT_CONFIG = {
 export const NETWORK_CONFIG = {
   NETWORK: "testnet" as const,
   NODE_URL: "https://fullnode.testnet.aptoslabs.com/v1",
-  FAUCET_URL: "https://faucet.testnet.aptoslabs.com"
+  FAUCET_URL: "https://faucet.testnet.aptoslabs.com",
+  // API key for rate limiting (optional but recommended)
+  API_KEY: process.env.NEXT_PUBLIC_APTOS_API_KEY || undefined,
 } as const; 
