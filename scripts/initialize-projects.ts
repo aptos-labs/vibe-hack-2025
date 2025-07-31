@@ -33,8 +33,8 @@ async function initializeProjects() {
   console.log(`🔑 Using account: ${padAddress(account.accountAddress.toString())}`);
 
   try {
-    // Projects to initialize
-    const projectIds = ["mdoy56jg-ej1gw", "mdrmvoex-hx59o"];
+    // Projects to initialize - all projects from projects.json
+    const projectIds = ["1", "2", "mdoy56jg-ej1gw", "mdrmvoex-hx59o"];
     
     console.log("📋 Initializing new projects...");
     for (const projectId of projectIds) {
