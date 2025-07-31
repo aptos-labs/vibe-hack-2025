@@ -38,7 +38,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       // Add API key if available to avoid rate limiting
       ...(NETWORK_CONFIG.API_KEY && { 
         clientConfig: {
-          headers: {
+          HEADERS: {
             'Authorization': `Bearer ${NETWORK_CONFIG.API_KEY}`
           }
         }

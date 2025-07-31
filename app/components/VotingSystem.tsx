@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { Aptos, AptosConfig, Network, MoveValue } from "@aptos-labs/ts-sdk";
+import { Aptos, AptosConfig, Network, type MoveValue } from "@aptos-labs/ts-sdk";
 import { CONTRACT_CONFIG, NETWORK_CONFIG } from "../config/contract";
 
 interface VotingSystemProps {
@@ -37,7 +37,7 @@ export function VotingSystem({ projectId }: VotingSystemProps) {
       // Add API key if available to avoid rate limiting
       ...(NETWORK_CONFIG.API_KEY && { 
         clientConfig: {
-          headers: {
+          HEADERS: {
             'Authorization': `Bearer ${NETWORK_CONFIG.API_KEY}`
           }
         }
