@@ -50,10 +50,13 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
   // Load vote data from smart contract
   const loadVoteData = useCallback(async () => {
     try {
+      console.log("🔍 Loading vote data for project:", projectId, "account:", account?.address);
+      
       // No need to check initialization - our contract auto-creates projects
 
       if (!account) {
         // Load public vote counts without user vote
+        console.log("👤 Loading public vote counts (no account)");
         const result = await aptos.view({
           payload: {
             function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::get_project_votes` as `${string}::${string}::${string}`,
@@ -63,6 +66,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
 
         const [upvotes, downvotes] = result as [number, number];
         const vibeScore = upvotes - downvotes;
+        console.log("📊 Public vote data:", { upvotes, downvotes, vibeScore });
         setVoteData({
           upvotes,
           downvotes,
@@ -74,6 +78,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       }
 
       // Load vote counts and user vote
+      console.log("👥 Loading vote counts and user vote data");
       const [voteCountsResult, userVoteResult] = await Promise.all([
         aptos.view({
           payload: {
@@ -92,6 +97,13 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       const [upvotes, downvotes] = voteCountsResult as [number, number];
       const userVoteType = (userVoteResult as MoveValue[])[0] as number;
 
+      console.log("📊 Vote data received:", {
+        upvotes,
+        downvotes,
+        userVoteType,
+        contractVoteTypes: CONTRACT_CONFIG.VOTE_TYPES
+      });
+
       let userVote: 'up' | 'down' | null = null;
       if (userVoteType === CONTRACT_CONFIG.VOTE_TYPES.UP) {
         userVote = 'up';
@@ -100,6 +112,8 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       }
 
       const vibeScore = upvotes - downvotes;
+      console.log("✅ Final vote state:", { upvotes, downvotes, vibeScore, userVote });
+      
       setVoteData({
         upvotes,
         downvotes,
@@ -177,8 +191,26 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
 
       setTransactionState('success');
       
-      // Reload vote data from contract
-      await loadVoteData();
+      // Add small delay to ensure blockchain state propagation
+      console.log("🔄 Waiting for blockchain state propagation...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Reload vote data from contract with retry logic
+      console.log("🔄 Reloading vote data...");
+      try {
+        await loadVoteData();
+        console.log("✅ Vote data reloaded successfully");
+      } catch (reloadError) {
+        console.error("❌ Failed to reload vote data:", reloadError);
+        // Retry once more after another delay
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        try {
+          await loadVoteData();
+          console.log("✅ Vote data reloaded on retry");
+        } catch (retryError) {
+          console.error("❌ Failed to reload vote data on retry:", retryError);
+        }
+      }
       
       // Reset transaction state after a delay
       setTimeout(() => setTransactionState('idle'), 2000);
