@@ -40,41 +40,18 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
     return new Aptos(aptosConfig);
   }, []); // Empty dependency array since config never changes
 
-  // Check if project is initialized in smart contract
+  // With our new contract, all projects are always available for voting 
+  // because they auto-initialize on first vote
   const checkProjectInitialized = useCallback(async () => {
-    try {
-      await aptos.view({
-        payload: {
-          function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::get_project_votes` as `${string}::${string}::${string}`,
-          functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
-        },
-      });
-      setIsProjectInitialized(true);
-      return true; // If we get here, project exists
-    } catch {
-      console.log(`Project ${projectId} not initialized in smart contract`);
-      setIsProjectInitialized(false);
-      return false;
-    }
-  }, [projectId, aptos]);
+    // Always return true since our contract auto-creates projects
+    setIsProjectInitialized(true);
+    return true;
+  }, []);
 
   // Load vote data from smart contract
   const loadVoteData = useCallback(async () => {
     try {
-      // First check if project is initialized
-      const isInitialized = await checkProjectInitialized();
-      
-      if (!isInitialized) {
-        console.warn(`Project ${projectId} is not initialized in smart contract. Displaying zero votes.`);
-        setVoteData({
-          upvotes: 0,
-          downvotes: 0,
-          totalVotes: 0,
-          userVote: null,
-        });
-        onVibeScoreUpdate(projectId, 0);
-        return;
-      }
+      // No need to check initialization - our contract auto-creates projects
 
       if (!account) {
         // Load public vote counts without user vote
@@ -150,26 +127,11 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       return;
     }
 
-    // Check if project is initialized before attempting to vote
-    if (!isProjectInitialized) {
-      setErrorMessage('This project is not yet available for voting. Please try again later.');
-      setTransactionState('error');
-      setTimeout(() => {
-        setTransactionState('idle');
-        setErrorMessage('');
-      }, 3000);
-      return;
-    }
-
     setTransactionState('pending');
     setErrorMessage('');
 
     try {
-      // Double-check initialization status right before voting
-      const initialized = await checkProjectInitialized();
-      if (!initialized) {
-        throw new Error('Project not initialized in smart contract');
-      }
+      // Our contract auto-creates projects, so no initialization check needed
 
       // Determine if this is a toggle (remove vote) or switch vote
       const isSameVote = voteData.userVote === voteType;
@@ -213,9 +175,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       if (error instanceof Error) {
         errorMsg = error.message;
         // Provide more user-friendly error messages
-        if (errorMsg.includes('E_NOT_INITIALIZED') || errorMsg.includes('not initialized')) {
-          errorMsg = 'This project is not yet available for voting.';
-        } else if (errorMsg.includes('INSUFFICIENT_BALANCE')) {
+        if (errorMsg.includes('INSUFFICIENT_BALANCE')) {
           errorMsg = 'Insufficient APT balance for transaction fees.';
         } else if (errorMsg.includes('EACCOUNT_NOT_FOUND')) {
           errorMsg = 'Please ensure your wallet is properly connected.';
@@ -241,7 +201,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
   // Get button states
   const getButtonState = (voteType: 'up' | 'down') => {
     const isActive = voteData.userVote === voteType;
-    const isDisabled = !connected || transactionState === 'pending' || !isProjectInitialized;
+    const isDisabled = !connected || transactionState === 'pending';
     
     return { isActive, isDisabled };
   };
@@ -269,8 +229,6 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
             title={
               !connected 
                 ? "Connect wallet to vote"
-                : !isProjectInitialized
-                  ? "Project not available for voting yet"
                 : upButtonState.isActive 
                   ? "Click to remove your upvote" 
                   : "Click to upvote"
@@ -296,8 +254,6 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
             title={
               !connected 
                 ? "Connect wallet to vote"
-                : !isProjectInitialized
-                  ? "Project not available for voting yet"
                 : downButtonState.isActive 
                   ? "Click to remove your downvote" 
                   : "Click to downvote"
@@ -359,12 +315,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
         </div>
       )}
 
-      {/* Project Not Initialized Message */}
-      {connected && !isProjectInitialized && (
-        <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-          ⚠️ Project not yet available for voting
-        </div>
-      )}
+
     </div>
   );
 } 
