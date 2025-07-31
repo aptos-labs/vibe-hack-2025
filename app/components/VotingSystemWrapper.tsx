@@ -147,6 +147,13 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
           : `${CONTRACT_CONFIG.MODULE_ADDRESS}::project_voting::downvote` as `${string}::${string}::${string}`;
       }
 
+      console.log("🚀 Submitting transaction:", {
+        function: functionName,
+        arguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
+        projectId,
+        moduleAddress: CONTRACT_CONFIG.MODULE_ADDRESS
+      });
+
       const response = await signAndSubmitTransaction({
         data: {
           function: functionName,
@@ -154,10 +161,19 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
         },
       });
 
-      // Wait for transaction to be confirmed
-      await aptos.waitForTransaction({
-        transactionHash: response.hash,
-      });
+      console.log("📝 Transaction submitted:", response.hash);
+
+      // Wait for transaction to be confirmed with timeout
+      const waitResult = await Promise.race([
+        aptos.waitForTransaction({
+          transactionHash: response.hash,
+        }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Transaction confirmation timeout")), 30000)
+        )
+      ]);
+
+      console.log("✅ Transaction confirmed:", waitResult);
 
       setTransactionState('success');
       
@@ -168,16 +184,24 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       setTimeout(() => setTransactionState('idle'), 2000);
 
     } catch (error: unknown) {
-      console.error("Voting transaction failed:", error);
+      console.error("🚨 Voting transaction failed:", error);
+      console.error("Error details:", JSON.stringify(error, null, 2));
+      
       let errorMsg = "Transaction failed";
       
       if (error instanceof Error) {
         errorMsg = error.message;
+        console.error("Error message:", errorMsg);
+        
         // Provide more user-friendly error messages
         if (errorMsg.includes('INSUFFICIENT_BALANCE')) {
           errorMsg = 'Insufficient APT balance for transaction fees.';
         } else if (errorMsg.includes('EACCOUNT_NOT_FOUND')) {
           errorMsg = 'Please ensure your wallet is properly connected.';
+        } else if (errorMsg.includes('timeout')) {
+          errorMsg = 'Transaction confirmation timed out. It may still succeed.';
+        } else if (errorMsg.includes('User rejected')) {
+          errorMsg = 'Transaction was cancelled by user.';
         }
       }
       
