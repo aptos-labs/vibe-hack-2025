@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { Aptos, AptosConfig, Network, MoveValue } from "@aptos-labs/ts-sdk";
+import { Aptos, AptosConfig, Network, type MoveValue } from "@aptos-labs/ts-sdk";
 import { CONTRACT_CONFIG, NETWORK_CONFIG } from "../config/contract";
 
 interface VotingSystemWrapperProps {
@@ -29,7 +29,6 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
   });
   const [transactionState, setTransactionState] = useState<TransactionState>('idle');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isProjectInitialized, setIsProjectInitialized] = useState<boolean>(true);
   
   // Initialize Aptos client with useMemo to prevent recreation on every render
   const aptos = useMemo(() => {
@@ -39,14 +38,6 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
     });
     return new Aptos(aptosConfig);
   }, []); // Empty dependency array since config never changes
-
-  // With our new contract, all projects are always available for voting 
-  // because they auto-initialize on first vote
-  const checkProjectInitialized = useCallback(async () => {
-    // Always return true since our contract auto-creates projects
-    setIsProjectInitialized(true);
-    return true;
-  }, []);
 
   // Load vote data from smart contract
   const loadVoteData = useCallback(async () => {
@@ -119,7 +110,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       });
       onVibeScoreUpdate(projectId, 0);
     }
-  }, [account, projectId, aptos, onVibeScoreUpdate, checkProjectInitialized]);
+  }, [account, projectId, aptos, onVibeScoreUpdate]);
 
   // Handle voting transactions
   const handleVote = async (voteType: 'up' | 'down') => {
