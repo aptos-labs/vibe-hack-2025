@@ -1,4 +1,4 @@
-import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
+import { Account, Aptos, AptosConfig, Network, Ed25519PrivateKey } from "@aptos-labs/ts-sdk";
 import { CONTRACT_CONFIG } from "../app/config/contract";
 
 // Helper function to pad addresses to 64 characters
@@ -28,7 +28,10 @@ async function initializeProjects() {
     process.exit(1);
   }
 
-  const account = Account.fromPrivateKey({ privateKey: privateKeyHex });
+  // Create account using Ed25519PrivateKey
+  const cleanPrivateKey = privateKeyHex.replace(/^(ed25519-priv-)?0x/, '');
+  const privateKey = new Ed25519PrivateKey(cleanPrivateKey);
+  const account = Account.fromPrivateKey({ privateKey });
 
   console.log(`🔑 Using account: ${padAddress(account.accountAddress.toString())}`);
 
@@ -43,7 +46,7 @@ async function initializeProjects() {
       const projectTransaction = await aptos.transaction.build.simple({
         sender: account.accountAddress,
         data: {
-          function: `${contractAddress}::vibe_voting::initialize_project`,
+          function: `${contractAddress}::voting::initialize_project`,
           functionArguments: [projectId],
         },
       });
