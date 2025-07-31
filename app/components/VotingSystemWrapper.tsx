@@ -43,15 +43,15 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
   // Check if project is initialized in smart contract
   const checkProjectInitialized = useCallback(async () => {
     try {
-      const result = await aptos.view({
+      await aptos.view({
         payload: {
-          function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_project_votes` as `${string}::${string}::${string}`,
+          function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::get_project_votes` as `${string}::${string}::${string}`,
           functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
         },
       });
       setIsProjectInitialized(true);
       return true; // If we get here, project exists
-    } catch (error) {
+    } catch {
       console.log(`Project ${projectId} not initialized in smart contract`);
       setIsProjectInitialized(false);
       return false;
@@ -80,7 +80,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
         // Load public vote counts without user vote
         const result = await aptos.view({
           payload: {
-            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_project_votes` as `${string}::${string}::${string}`,
+            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::get_project_votes` as `${string}::${string}::${string}`,
             functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
           },
         });
@@ -101,13 +101,13 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
       const [voteCountsResult, userVoteResult] = await Promise.all([
         aptos.view({
           payload: {
-            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_project_votes` as `${string}::${string}::${string}`,
+            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::get_project_votes` as `${string}::${string}::${string}`,
             functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId],
           },
         }),
         aptos.view({
           payload: {
-            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::get_user_vote` as `${string}::${string}::${string}`,
+            function: `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::get_user_vote` as `${string}::${string}::${string}`,
             functionArguments: [CONTRACT_CONFIG.MODULE_ADDRESS, projectId, account.address],
           },
         })
@@ -178,12 +178,12 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
 
       if (isSameVote) {
         // Remove vote if clicking same vote type
-        functionName = `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::remove_vote` as `${string}::${string}::${string}`;
+        functionName = `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::remove_vote` as `${string}::${string}::${string}`;
       } else {
         // Cast new vote
         functionName = voteType === 'up' 
-          ? `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::upvote` as `${string}::${string}::${string}`
-          : `${CONTRACT_CONFIG.MODULE_ADDRESS}::voting::downvote` as `${string}::${string}::${string}`;
+          ? `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::upvote` as `${string}::${string}::${string}`
+          : `${CONTRACT_CONFIG.MODULE_ADDRESS}::vibe_voting::downvote` as `${string}::${string}::${string}`;
       }
 
       const response = await signAndSubmitTransaction({
@@ -255,6 +255,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
         <div className="flex items-center gap-3">
           {/* Upvote Button */}
           <button
+            type="button"
             onClick={() => handleVote('up')}
             disabled={upButtonState.isDisabled}
             className={`
@@ -281,6 +282,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
 
           {/* Downvote Button */}
           <button
+            type="button"
             onClick={() => handleVote('down')}
             disabled={downButtonState.isDisabled}
             className={`

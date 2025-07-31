@@ -28,9 +28,7 @@ async function initializeProjects() {
     process.exit(1);
   }
 
-  const account = Account.fromPrivateKey({
-    privateKey: privateKeyHex,
-  });
+  const account = Account.fromPrivateKey({ privateKey: privateKeyHex });
 
   console.log(`🔑 Using account: ${padAddress(account.accountAddress.toString())}`);
 

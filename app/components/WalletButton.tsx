@@ -9,7 +9,7 @@ export function WalletButton() {
   const handleConnect = async () => {
     try {
       if (wallets && wallets.length > 0) {
-        await connect("Petra");
+        await connect(wallets[0].name);
       } else {
         alert(
           "No Aptos wallet found. Please install Petra or another Aptos wallet."
