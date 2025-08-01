@@ -140,5 +140,20 @@
     "creator": "Joe Hughes",
     "creatorUrl": "https://github.com/moonclavedev",
     "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdtcmz53-qakgr",
+    "title": "Why Aptos?",
+    "description": "Why Why Why? Wonder no more! We will prove to you why Aptos is the blockchain of choice for your project!",
+    "imageUrl": "https://medium.com/aptoslabs/the-aptos-vision-1028ac56676e",
+    "projectUrl": "https://aptos-blockchain-showcase.vercel.app/",
+    "repoUrl": "https://github.com/bowenyang007/aptos-splash",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "@bowen",
+    "creatorUrl": "",
+    "dateAdded": "2025-08-01"
   }
 ]
