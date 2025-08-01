@@ -184,7 +184,7 @@ export default function Home() {
               APTOS INTERNAL VIBE CODING HACKATHON 2025
             </p>
             <p className="text-sm font-mono text-gray-600 dark:text-stone-300">
-              🏆 100 APT PRIZE | 7/24-3/31 VIBE DAYS | VOTING DEADLINE: 08/01 10AM PT
+              🏆 100 APT PRIZE | 07/24-08/03 VIBE DAYS | VOTING DEADLINE: 08/04 10AM PT
             </p>
             <p className="text-sm font-mono text-gray-600 dark:text-stone-300 mt-2">
               STATUS: [OPEN] | SUBMISSIONS: {projects.length} | NETWORK: APTOS_TESTNET
