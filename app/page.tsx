@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { WalletButton } from "./components/WalletButton";
 import { VotingSystemWrapper } from "./components/VotingSystemWrapper";
 
@@ -41,6 +41,14 @@ export default function Home() {
   const [projectVibeScores, setProjectVibeScores] = useState<Record<string, number>>({});
   const [statusFilter, setStatusFilter] = useState<'all' | 'live' | 'development' | 'concept'>('all');
   const projectsPerPage = 6;
+  
+  // IMPORTANT: useCallback must be called early to maintain hook order
+  const updateVibeScore = useCallback((projectId: string, vibeScore: number) => {
+    setProjectVibeScores(prev => ({
+      ...prev,
+      [projectId]: vibeScore
+    }));
+  }, []);
   
   // Load projects data on component mount
   useEffect(() => {
@@ -124,14 +132,7 @@ export default function Home() {
   };
   
 
-  
-  // Function to update vibe score for a project
-  const updateVibeScore = (projectId: string, vibeScore: number) => {
-    setProjectVibeScores(prev => ({
-      ...prev,
-      [projectId]: vibeScore
-    }));
-  };
+
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white retro-crt retro-scanlines">

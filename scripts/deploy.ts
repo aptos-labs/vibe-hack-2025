@@ -54,7 +54,7 @@ async function deployContract() {
       path.join(__dirname, "../move/build/aptos_vibes/package-metadata.bcs")
     );
     const byteCode = fs.readFileSync(
-      path.join(__dirname, "../move/build/aptos_vibes/bytecode_modules/vibe_voting.mv")
+      path.join(__dirname, "../move/build/aptos_vibes/bytecode_modules/project_voting.mv")
     );
 
     console.log("📦 Publishing Move package...");
@@ -85,7 +85,7 @@ async function deployContract() {
     const initTransaction = await aptos.transaction.build.simple({
       sender: account.accountAddress,
       data: {
-        function: `${contractAddress}::vibe_voting::initialize`,
+        function: `${contractAddress}::project_voting::initialize`,
         functionArguments: [],
       },
     });
@@ -102,30 +102,8 @@ async function deployContract() {
     console.log("✅ Voting system initialized");
     console.log(`📄 Init transaction hash: ${initResponse.hash}`);
 
-    // Initialize projects
-    const projectIds = ["1", "2", "3", "4", "5", "6"]; // Matching the project IDs from the frontend
-    
-    console.log("📋 Initializing projects...");
-    for (const projectId of projectIds) {
-      const projectTransaction = await aptos.transaction.build.simple({
-        sender: account.accountAddress,
-        data: {
-          function: `${contractAddress}::vibe_voting::initialize_project`,
-          functionArguments: [projectId],
-        },
-      });
-
-      const projectResponse = await aptos.signAndSubmitTransaction({
-        signer: account,
-        transaction: projectTransaction,
-      });
-
-      await aptos.waitForTransaction({
-        transactionHash: projectResponse.hash,
-      });
-
-      console.log(`✅ Project ${projectId} initialized`);
-    }
+    // Note: Projects are auto-created when first vote is cast, no manual initialization needed
+    console.log("📋 Projects will be auto-created when first votes are cast (no manual initialization needed)");
 
     console.log("\n🎯 DEPLOYMENT COMPLETE!");
     console.log("=".repeat(50));

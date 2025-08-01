@@ -40,7 +40,7 @@
     "id": "mdoy56jg-ej1gw",
     "title": "On Aptos",
     "description": "Real-time portfolio tracking for tokens, NFTs, and DeFi protocols across Aptos as well as dedicated analytics for Stablecoins, Bitcoin, and RWAs.",
-    "imageUrl": "https://github.com/zacharyr0th/on-aptos/blob/main/app/icon.png",
+    "imageUrl": "https://raw.githubusercontent.com/zacharyr0th/on-aptos/main/app/icon.png",
     "projectUrl": "https://www.on-aptos.com/",
     "repoUrl": "https://github.com/zacharyr0th/on-aptos",
     "tags": [
