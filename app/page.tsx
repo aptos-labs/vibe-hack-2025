@@ -46,7 +46,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'vibe' | 'random'>('random');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [projectVibeScores, setProjectVibeScores] = useState<Record<string, number>>({});
-  const [statusFilter, setStatusFilter] = useState<'all' | 'live' | 'development' | 'concept'>('all');
+
   const projectsPerPage = 6;
   
   // IMPORTANT: useCallback must be called early to maintain hook order
@@ -86,16 +86,8 @@ export default function Home() {
     );
   }
 
-  // Filter and sort projects based on selected criteria
+  // Sort projects based on selected criteria
   const filteredAndSortedProjects = [...projects]
-    .filter(project => {
-      // Status filter
-      if (statusFilter !== 'all' && project.status !== statusFilter) {
-        return false;
-      }
-      
-      return true;
-    })
     .sort((a, b) => {
       let comparison = 0;
       
@@ -264,25 +256,7 @@ export default function Home() {
                   </select>
                 </div>
               </div>
-              {/* Status Filter */}
-              <div className="border border-black dark:border-white bg-white dark:bg-black text-black dark:text-stone-100 px-2 py-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs">STATUS:</span>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => {
-                      setStatusFilter(e.target.value as 'all' | 'live' | 'development' | 'concept');
-                      setCurrentPage(1);
-                    }}
-                    className="font-mono text-xs bg-white dark:bg-black text-black dark:text-white border border-black dark:border-white px-1 py-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
-                  >
-                    <option value="all">🌐 ALL</option>
-                    <option value="live">✅ LIVE</option>
-                    <option value="development">🔧 DEV</option>
-                    <option value="concept">💡 IDEA</option>
-                  </select>
-                </div>
-              </div>
+
 
             </div>
           </div>
