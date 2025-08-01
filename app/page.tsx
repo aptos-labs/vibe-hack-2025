@@ -36,7 +36,7 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState<'latest' | 'vibe'>('latest');
+  const [sortBy, setSortBy] = useState<'vibe' | 'random'>('random');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [projectVibeScores, setProjectVibeScores] = useState<Record<string, number>>({});
   const [statusFilter, setStatusFilter] = useState<'all' | 'live' | 'development' | 'concept'>('all');
@@ -92,9 +92,7 @@ export default function Home() {
     .sort((a, b) => {
       let comparison = 0;
       
-      if (sortBy === 'latest') {
-        comparison = new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
-      } else if (sortBy === 'vibe') {
+      if (sortBy === 'vibe') {
         const scoreA = projectVibeScores[a.id] || 0;
         const scoreB = projectVibeScores[b.id] || 0;
         if (scoreB !== scoreA) {
@@ -103,10 +101,18 @@ export default function Home() {
           // If vibe scores are equal, sort by latest as secondary
           comparison = new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
         }
+      } else if (sortBy === 'random') {
+        // Create a deterministic but pseudo-random order based on project IDs
+        // This ensures the order is consistent during a session but feels random
+        const hashA = a.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashB = b.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        // Add some randomness based on current date to change order daily
+        const dateHash = new Date().toDateString().split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        comparison = ((hashA + dateHash) % 1000) - ((hashB + dateHash) % 1000);
       }
       
-      // Apply sort direction
-      return sortDirection === 'desc' ? comparison : -comparison;
+      // Apply sort direction (except for random which is already randomized)
+      return sortBy === 'random' ? comparison : (sortDirection === 'desc' ? comparison : -comparison);
     });
   
   // Calculate pagination
@@ -224,17 +230,16 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <span className="font-mono text-xs">SORT:</span>
                   <select
-                    value={`${sortBy}_${sortDirection}`}
+                    value={sortBy === 'random' ? 'random_asc' : `${sortBy}_${sortDirection}`}
                     onChange={(e) => {
-                      const [newSortBy, newDirection] = e.target.value.split('_') as ['latest' | 'vibe', 'asc' | 'desc'];
+                      const [newSortBy, newDirection] = e.target.value.split('_') as ['vibe' | 'random', 'asc' | 'desc'];
                       setSortBy(newSortBy);
                       setSortDirection(newDirection);
                       setCurrentPage(1);
                     }}
                     className="font-mono text-xs bg-white dark:bg-black text-black dark:text-white border border-black dark:border-white px-1 py-0 cursor-pointer focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white"
                   >
-                    <option value="latest_desc">📅 DATE: NEWEST→OLDEST</option>
-                    <option value="latest_asc">📅 DATE: OLDEST→NEWEST</option>
+                    <option value="random_asc">🎲 RANDOM ORDER</option>
                     <option value="vibe_desc">⚡ VIBE: HIGH→LOW</option>
                     <option value="vibe_asc">⚡ VIBE: LOW→HIGH</option>
                   </select>
