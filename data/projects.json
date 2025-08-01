@@ -80,5 +80,20 @@
     "creator": "wintertoro",
     "creatorUrl": "https://github.com/wintertoro",
     "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdsbejw1-gny3k",
+    "title": "blockpipe-vibe",
+    "description": "data feed, oracle, and prediction markets on chain",
+    "imageUrl": "/api/placeholder/400/300",
+    "projectUrl": "https://blockpipe-jmdidsqjt-jtang17s-projects.vercel.app/",
+    "repoUrl": "https://github.com/jtang17/blockpipe-vibe",
+    "tags": [
+      "general"
+    ],
+    "status": "development",
+    "creator": "jon",
+    "creatorUrl": "https://github.com/jtang17",
+    "dateAdded": "2025-08-01"
   }
 ]
