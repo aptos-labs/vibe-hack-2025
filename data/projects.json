@@ -155,5 +155,20 @@
     "creator": "@bowen",
     "creatorUrl": "",
     "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdtcqbwx-v551x",
+    "title": "Why Aptos?",
+    "description": "Why Why Why? Wonder no more. Let us show you why Aptos is the blockchain of choice for your project!",
+    "imageUrl": "https://miro.medium.com/v2/resize:fit:1400/1*XHtQshMFYCCttT4yFq5F4A.png",
+    "projectUrl": "https://aptos-blockchain-showcase.vercel.app/",
+    "repoUrl": "https://github.com/bowenyang007/aptos-splash",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "@bowen",
+    "creatorUrl": "",
+    "dateAdded": "2025-08-01"
   }
 ]
