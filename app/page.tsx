@@ -102,13 +102,23 @@ export default function Home() {
           comparison = new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
         }
       } else if (sortBy === 'random') {
-        // Create a deterministic but pseudo-random order based on project IDs
-        // This ensures the order is consistent during a session but feels random
-        const hashA = a.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const hashB = b.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        // Add some randomness based on current date to change order daily
-        const dateHash = new Date().toDateString().split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        comparison = ((hashA + dateHash) % 1000) - ((hashB + dateHash) % 1000);
+        // Create a more effective random order using a better hash function
+        // Combines project ID with current date for daily randomization
+        const seedString = new Date().toDateString();
+        
+        const hashString = (str: string): number => {
+          let hash = 0;
+          for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+          }
+          return Math.abs(hash);
+        };
+        
+        const hashA = hashString(a.id + seedString + a.title);
+        const hashB = hashString(b.id + seedString + b.title);
+        comparison = hashA - hashB;
       }
       
       // Apply sort direction (except for random which is already randomized)
