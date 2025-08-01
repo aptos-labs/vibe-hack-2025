@@ -6,6 +6,13 @@ import { useState, useEffect, useCallback } from "react";
 import { WalletButton } from "./components/WalletButton";
 import { VotingSystemWrapper } from "./components/VotingSystemWrapper";
 
+// Extend Window interface for session random seed
+declare global {
+  interface Window {
+    sessionRandomSeed?: string;
+  }
+}
+
 interface Project {
   id: string;
   title: string;
@@ -102,9 +109,11 @@ export default function Home() {
           comparison = new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
         }
       } else if (sortBy === 'random') {
-        // Create a more effective random order using a better hash function
-        // Combines project ID with current date for daily randomization
-        const seedString = new Date().toDateString();
+        // Create a session-based random order - different for each user session
+        // Use Math.random() to create a unique seed per session that stays consistent during sorting
+        if (!window.sessionRandomSeed) {
+          window.sessionRandomSeed = Math.random().toString(36).substring(2, 15);
+        }
         
         const hashString = (str: string): number => {
           let hash = 0;
@@ -116,8 +125,8 @@ export default function Home() {
           return Math.abs(hash);
         };
         
-        const hashA = hashString(a.id + seedString + a.title);
-        const hashB = hashString(b.id + seedString + b.title);
+        const hashA = hashString(a.id + window.sessionRandomSeed + a.title);
+        const hashB = hashString(b.id + window.sessionRandomSeed + b.title);
         comparison = hashA - hashB;
       }
       
