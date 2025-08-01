@@ -110,5 +110,20 @@
     "creator": "jon",
     "creatorUrl": "https://github.com/jtang17",
     "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdt8o6fk-c0icq",
+    "title": "verify aptos wallet signed message",
+    "description": "verify message signed by keyless and EOA wallet",
+    "imageUrl": "/api/placeholder/400/300",
+    "projectUrl": "https://aptos-verify-signed-message-example.vercel.app/",
+    "repoUrl": "https://github.com/0x-j/aptos-verify-signed-message-example",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "zero_x_j",
+    "creatorUrl": "https://github.com/0x-j",
+    "dateAdded": "2025-08-01"
   }
 ]
