@@ -65,5 +65,20 @@
     "creator": "Logan.wang",
     "creatorUrl": "",
     "dateAdded": "2025-07-31"
+  },
+  {
+    "id": "mds5o6s2-djyje",
+    "title": "vibe hack page",
+    "description": "vibe hack landing page. This was also vibecoded!",
+    "imageUrl": "/api/placeholder/400/300",
+    "projectUrl": "https://vibe-hack-2025.vercel.app",
+    "repoUrl": "https://github.com/aptos-labs/vibe-hack-2025",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "wintertoro",
+    "creatorUrl": "https://github.com/wintertoro",
+    "dateAdded": "2025-08-01"
   }
 ]
