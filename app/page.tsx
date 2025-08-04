@@ -293,7 +293,7 @@ export default function Home() {
                   <div className="absolute inset-0">
                     {/* Use regular img tag for external URLs to avoid Next.js optimization issues */}
                     {project.imageUrl.startsWith('http') ? (
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={project.imageUrl}
                         alt={project.title}
