@@ -291,12 +291,22 @@ export default function Home() {
               >
                 {project.imageUrl && !project.imageUrl.includes('placeholder') ? (
                   <div className="absolute inset-0">
-                    <Image
-                      src={project.imageUrl}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
+                    {/* Use regular img tag for external URLs to avoid Next.js optimization issues */}
+                    {project.imageUrl.startsWith('http') ? (
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={project.imageUrl}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={project.imageUrl}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                 ) : (
                   <div className={`absolute inset-0 flex items-center justify-center ${
