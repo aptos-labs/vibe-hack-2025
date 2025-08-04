@@ -296,6 +296,7 @@ export default function Home() {
                       alt={project.title}
                       fill
                       className="object-cover"
+                      unoptimized
                     />
                   </div>
                 ) : (
