@@ -3,7 +3,7 @@
 **Internal Company-Wide Vibe Coding Hackathon**
 
 [![Live Submissions](https://img.shields.io/badge/Submissions-Live-brightgreen)](https://aptos-vibes.vercel.app)
-[![Prize](https://img.shields.io/badge/Prize-100%20APT-orange)](https://aptos.dev)
+[![Submissions](https://img.shields.io/badge/Submissions-Open-green)](https://aptos.dev)
 [![Instant Publishing](https://img.shields.io/badge/Publishing-Instant-blue)](#)
 [![Deadline](https://img.shields.io/badge/Deadline-Aug%2004%2010AM%20PT-red)](#)
 
@@ -19,7 +19,7 @@ Hey everyone! We're thrilled to launch our **company-wide Vibe Coding Hackathon*
 
 **07/24-08/03 Vibe Days | 08/04 10AM PT - Highest Votes Win**
 
-***🎉 100 APT PRIZE!!! BRAGGING RIGHTS! FAME! GLORY! FUN! 🎉***
+***🎉 BRAGGING RIGHTS! FAME! GLORY! FUN! 🎉***
 
 ---
 
@@ -37,7 +37,7 @@ This is your chance to get creative and ship something **fun, useful, weird, or 
 - ⚡ **Instant Publishing** - Projects appear immediately on the site
 - 🗳️ Voting will be **open to all Aptos employees**
 - 🏁 **Deadline for voting**: 09:59 AM PT, Aug **04**
-- 🏆 Highest voted project wins **100 APT**
+- 🏆 Highest voted project wins **bragging rights**
 
 ---
 

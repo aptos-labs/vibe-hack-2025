@@ -73,7 +73,7 @@ export default function ReadmePage() {
             <div className="retro-card p-8">
               <div className="border-4 border-black dark:border-white bg-black text-white dark:bg-white dark:text-black p-8 mb-6">
                 <p className="text-2xl font-mono font-bold mb-4">
-                  🎉 100 APT PRIZE!!! BRAGGING RIGHTS! FAME! GLORY! FUN! 🎉
+                  🎉 BRAGGING RIGHTS! FAME! GLORY! FUN! 🎉
                 </p>
                 <p className="text-lg font-mono mb-4">
                   💡 7/28-3/31 VIBE DAYS | 08/01 10AM PT - HIGHEST VOTES WIN
@@ -95,7 +95,7 @@ export default function ReadmePage() {
                     <li>✅ Submit via this portal</li>
                     <li>🗳️ All employees can vote</li>
                     <li>🏁 Deadline: Aug 01, 10AM PT</li>
-                    <li>🏆 Prize: 100 APT</li>
+                    <li>🏆 Prize: Bragging Rights</li>
                   </ul>
                 </div>
 

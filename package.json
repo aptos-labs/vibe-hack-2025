@@ -1,7 +1,7 @@
 {
   "name": "aptos-vibe-hack-2025",
   "version": "1.0.0",
-  "description": "Internal Aptos company-wide Vibe Coding Hackathon 2025 - 100 APT prize for the best DApp!",
+  "description": "Internal Aptos company-wide Vibe Coding Hackathon 2025 - Build the best DApp!",
   "private": true,
   "scripts": {
     "dev": "next dev",
