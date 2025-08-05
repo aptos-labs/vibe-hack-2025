@@ -110,5 +110,80 @@
     "creator": "jon",
     "creatorUrl": "https://github.com/jtang17",
     "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdt8o6fk-c0icq",
+    "title": "verify aptos wallet signed message",
+    "description": "verify message signed by keyless and EOA wallet",
+    "imageUrl": "/api/placeholder/400/300",
+    "projectUrl": "https://aptos-verify-signed-message-example.vercel.app/",
+    "repoUrl": "https://github.com/0x-j/aptos-verify-signed-message-example",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "zero_x_j",
+    "creatorUrl": "https://github.com/0x-j",
+    "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdt9v20z-gpjd3",
+    "title": "Aptos Yapper Metrics",
+    "description": "Real-time Aptos community sentiment analytics platform that tracks social media engagement and mindshare data. Features Redis caching for optimized query performance, automated data warming, custom date ranges, and identifies top Aptos community influencers (\"yappers\") using Kaito API and X/Twitter integration.",
+    "imageUrl": "https://yapper-metrics.vercel.app/yapper-metrics-thumbnail.jpg",
+    "projectUrl": "https://yapper-metrics.vercel.app",
+    "repoUrl": "https://github.com/aptos-labs/yapper-metrics",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "Joe",
+    "creatorUrl": "https://github.com/0xJoeAptos",
+    "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdtcmz53-qakgr",
+    "title": "Why Aptos?",
+    "description": "Why Why Why? Wonder no more! We will prove to you why Aptos is the blockchain of choice for your project!",
+    "imageUrl": "https://medium.com/aptoslabs/the-aptos-vision-1028ac56676e",
+    "projectUrl": "https://aptos-blockchain-showcase.vercel.app/",
+    "repoUrl": "https://github.com/bowenyang007/aptos-splash",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "@bowen",
+    "creatorUrl": "",
+    "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdtcqbwx-v551x",
+    "title": "Why Aptos?",
+    "description": "Why Why Why? Wonder no more. Let us show you why Aptos is the blockchain of choice for your project!",
+    "imageUrl": "https://miro.medium.com/v2/resize:fit:1400/1*XHtQshMFYCCttT4yFq5F4A.png",
+    "projectUrl": "https://aptos-blockchain-showcase.vercel.app/",
+    "repoUrl": "https://github.com/bowenyang007/aptos-splash",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "@bowen",
+    "creatorUrl": "",
+    "dateAdded": "2025-08-01"
+  },
+  {
+    "id": "mdx9c2xu-eqkah",
+    "title": "Aptos Pictionary",
+    "description": "Team vs team artistic fun!! Fully on chain!! Powered by keyless, no need to approve txns! 100% vibe coded!!",
+    "imageUrl": "http://dport.me/assets/pictionary.png",
+    "projectUrl": "https://aptos-pictionary.vercel.app/",
+    "repoUrl": "https://github.com/banool/aptos-pictionary",
+    "tags": [
+      "general"
+    ],
+    "status": "live",
+    "creator": "@dport",
+    "creatorUrl": "https://github.com/banool",
+    "dateAdded": "2025-08-04"
   }
 ]
