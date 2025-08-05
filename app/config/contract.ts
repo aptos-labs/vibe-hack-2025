@@ -11,7 +11,7 @@ export function padAddress(address: string): string {
 export const CONTRACT_CONFIG = {
   // Deployed contract address on testnet
   MODULE_ADDRESS: padAddress("0x5bd3338c9f09619c16a5207af405b84e98d041c8194ea90c2243be7dba513423"),
-  MODULE_NAME: "project_voting",
+  MODULE_NAME: "aptos_vibes::project_voting",
   
   // Function names
   FUNCTIONS: {
