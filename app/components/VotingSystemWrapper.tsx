@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Aptos, AptosConfig, Network, type MoveValue } from "@aptos-labs/ts-sdk";
 import { CONTRACT_CONFIG, NETWORK_CONFIG } from "../config/contract";
+import { useNetworkCheck } from "../hooks/useNetworkCheck";
 
 interface VotingSystemWrapperProps {
   projectId: string;
@@ -21,6 +22,7 @@ type TransactionState = 'idle' | 'pending' | 'success' | 'error';
 
 export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSystemWrapperProps) {
   const { connected, account, signAndSubmitTransaction } = useWallet();
+  const networkInfo = useNetworkCheck();
   const [voteData, setVoteData] = useState<VoteData>({
     upvotes: 0,
     downvotes: 0,
@@ -256,7 +258,7 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
   // Get button states
   const getButtonState = (voteType: 'up' | 'down') => {
     const isActive = voteData.userVote === voteType;
-    const isDisabled = !connected || transactionState === 'pending';
+    const isDisabled = !connected || transactionState === 'pending' || networkInfo.status !== 'correct';
     
     return { isActive, isDisabled };
   };
@@ -356,8 +358,18 @@ export function VotingSystemWrapper({ projectId, onVibeScoreUpdate }: VotingSyst
         </div>
       )}
 
-      {/* User Vote Status */}
-      {connected && voteData.userVote && (
+      {/* User Vote Status or Network Warning */}
+      {connected && networkInfo.status === 'wrong' && (
+        <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">
+          ⚠️ Wrong network! Switch to {networkInfo.expectedNetwork} to vote
+        </div>
+      )}
+      {connected && networkInfo.status === 'unknown' && (
+        <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+          ⚠️ Network status unknown - voting may not work
+        </div>
+      )}
+      {connected && networkInfo.status === 'correct' && voteData.userVote && (
         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
           Your vote: {voteData.userVote === 'up' ? '👍' : '👎'} • Click same button to remove
         </div>
