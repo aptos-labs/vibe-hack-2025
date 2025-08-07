@@ -42,7 +42,7 @@ export function useNetworkCheck(): NetworkInfo {
         // Try to get account info - this will help us determine if we're on the right network
         try {
           await aptos.getAccountInfo({
-            accountAddress: account.address,
+            accountAddress: account.address.toString(),
           });
           
           // If we can get account info without error, we're likely on testnet
