@@ -126,21 +126,7 @@
     "creatorUrl": "https://github.com/0x-j",
     "dateAdded": "2025-08-01"
   },
-  {
-    "id": "mdt9v20z-gpjd3",
-    "title": "Aptos Yapper Metrics",
-    "description": "Real-time Aptos community sentiment analytics platform that tracks social media engagement and mindshare data. Features Redis caching for optimized query performance, automated data warming, custom date ranges, and identifies top Aptos community influencers (\"yappers\") using Kaito API and X/Twitter integration.",
-    "imageUrl": "https://yapper-metrics.vercel.app/yapper-metrics-thumbnail.jpg",
-    "projectUrl": "https://yapper-metrics.vercel.app",
-    "repoUrl": "https://github.com/aptos-labs/yapper-metrics",
-    "tags": [
-      "general"
-    ],
-    "status": "live",
-    "creator": "Joe",
-    "creatorUrl": "https://github.com/0xJoeAptos",
-    "dateAdded": "2025-08-01"
-  },
+
   {
     "id": "mdtcmz53-qakgr",
     "title": "Why Aptos?",
