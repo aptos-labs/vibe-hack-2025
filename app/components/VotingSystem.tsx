@@ -173,6 +173,7 @@ export function VotingSystem({ projectId }: VotingSystemProps) {
 
   // Load data on component mount and when wallet connection changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Valid data fetching pattern
     loadVoteData();
   }, [loadVoteData]);
 

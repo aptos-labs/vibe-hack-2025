@@ -24,6 +24,7 @@ export function useNetworkCheck(): NetworkInfo {
 
   useEffect(() => {
     if (!connected || !account) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Valid pattern for handling disconnected state
       setNetworkInfo({
         status: 'disconnected',
         currentNetwork: null,
