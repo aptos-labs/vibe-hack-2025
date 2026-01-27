@@ -16,7 +16,7 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "^5.2.1",
     "@aptos-labs/wallet-adapter-react": "^7.2.8",
-    "next": "^16.1.1",
+    "next": "^16.1.5",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
